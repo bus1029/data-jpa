@@ -34,4 +34,11 @@ class MemberJpaRepository {
     return em.createQuery("select count(m) from Member m", Long::class.javaObjectType)
       .singleResult
   }
+
+  fun findByUsernameAndAgeGreaterThan(username: String, age: Int): MutableList<Member>? {
+    return em.createQuery("select m from Member m where m.username = :username and m.age > :age", Member::class.java)
+      .setParameter("username", username)
+      .setParameter("age", age)
+      .resultList
+  }
 }
