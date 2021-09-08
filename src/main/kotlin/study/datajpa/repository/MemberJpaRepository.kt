@@ -41,4 +41,10 @@ class MemberJpaRepository {
       .setParameter("age", age)
       .resultList
   }
+
+  fun findByUserName(username: String): MutableList<Member>? {
+    return em.createNamedQuery("Member.findByUsername", Member::class.java)
+      .setParameter("username", username)
+      .resultList
+  }
 }

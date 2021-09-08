@@ -62,4 +62,15 @@ internal class MemberJpaRepositoryTest {
     val members = memberJpaRepository.findByUsernameAndAgeGreaterThan("BBB", 15)
     assertThat(members?.size).isEqualTo(1)
   }
+
+  @Test
+  fun findByUsernameUsingNamedQuery() {
+    val m1 = Member("AAA", 10, null)
+    val m2 = Member("BBB", 20, null)
+    memberJpaRepository.save(m1)
+    memberJpaRepository.save(m2)
+
+    val members = memberJpaRepository.findByUserName("BBB")
+    assertThat(members?.size).isEqualTo(1)
+  }
 }

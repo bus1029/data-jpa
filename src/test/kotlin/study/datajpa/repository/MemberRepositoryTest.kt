@@ -73,4 +73,26 @@ class MemberRepositoryTest {
     val members = memberRepository.findByUsernameAndAgeGreaterThan("BBB", 15)
     assertThat(members.size).isEqualTo(1)
   }
+
+  @Test
+  fun findByUsernameUsingNamedQuery() {
+    val m1 = Member("AAA", 10, null)
+    val m2 = Member("BBB", 20, null)
+    memberRepository.save(m1)
+    memberRepository.save(m2)
+
+    val members = memberRepository.findByUsername("BBB")
+    assertThat(members.size).isEqualTo(1)
+  }
+
+  @Test
+  fun findByUsernameUsingQuery() {
+    val m1 = Member("AAA", 10, null)
+    val m2 = Member("BBB", 20, null)
+    memberRepository.save(m1)
+    memberRepository.save(m2)
+
+    val members = memberRepository.findUser("BBB", 20)
+    assertThat(members.size).isEqualTo(1)
+  }
 }
