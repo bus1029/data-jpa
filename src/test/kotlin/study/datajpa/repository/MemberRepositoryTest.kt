@@ -1,6 +1,7 @@
 package study.datajpa.repository
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,6 +19,7 @@ class MemberRepositoryTest {
 
   @Test
   fun testMember() {
+    println("memberRepository = ${memberRepository.javaClass}")
     val member = Member("memberA")
     val savedMember = memberRepository.save(member)
     // Can return null
@@ -29,10 +31,35 @@ class MemberRepositoryTest {
       3. 단일 지역 변수의 범위를 제한하는 경우
      */
     findMember?.let {
-      Assertions.assertThat(it.id).isEqualTo(savedMember.id)
-      Assertions.assertThat(it.username).isEqualTo(savedMember.username)
+      assertThat(it.id).isEqualTo(savedMember.id)
+      assertThat(it.username).isEqualTo(savedMember.username)
       // repeatable-read 보장
-      Assertions.assertThat(it).isEqualTo(savedMember)
+      assertThat(it).isEqualTo(savedMember)
     }
+  }
+
+  @Test
+  fun crud() {
+    var member1 = Member("member11")
+    var member2 = Member("member22")
+    // 위에서 선언한 member 들을 사용하면 내부 id가 -1로 설정되어 있음
+    member1 = memberRepository.save(member1)
+    member2 = memberRepository.save(member2)
+
+    val findMember1 = memberRepository.findByIdOrNull(member1.id)
+    val findMember2 = memberRepository.findByIdOrNull(member2.id)
+    assertThat(findMember1).isEqualTo(member1)
+    assertThat(findMember2).isEqualTo(member2)
+
+    val members = memberRepository.findAll()
+    assertThat(members.size).isEqualTo(2)
+
+    val count = memberRepository.count()
+    assertThat(members.size.toLong()).isEqualTo(count)
+
+    memberRepository.delete(member1)
+    memberRepository.delete(member2)
+    val afterDeleteCount = memberRepository.count()
+    assertThat(afterDeleteCount).isEqualTo(0)
   }
 }
