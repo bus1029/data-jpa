@@ -140,4 +140,33 @@ class MemberRepositoryTest {
       println("memberDto = $it")
     }
   }
+
+  @Test
+  fun testReturnType() {
+    val m1 = Member("AAA", 10, null)
+    val m2 = Member("BBB", 20, null)
+    memberRepository.save(m1)
+    memberRepository.save(m2)
+
+    val findListByUsername = memberRepository.findListByUsername("AAA")
+    findListByUsername.forEach {
+      println("findMember = ${it}")
+    }
+
+    // 없는 데이터지만 빈 리스트를 반환
+    val findListByUsernameEmpty = memberRepository.findListByUsername("asdf")
+    println("findListByUsernameEmpty size = ${findListByUsernameEmpty.size}")
+
+    val findMemberByUsername = memberRepository.findMemberByUsername("AAA")
+    println("findMemberByUsername = $findMemberByUsername")
+
+    // Single Result의 경우 결과가 없으면 null 반환 -> Spring-data-jpa 가 감싸서 처리
+    // JPA 의 기본 동작은 SingleResult 로 검색했을 때 값이 없을 경우 Exception 반환
+    val findMemberByUsernameNull = memberRepository.findMemberByUsername("asdf")
+    println("findMemberByUsername = $findMemberByUsernameNull")
+
+    // 같은 데이터가 2 개 이상일 경우 Exception 이 터지지만 Spring 이 해당 Exception 을 한번 감싸서 다시 던짐
+    val findOptionalByUsername = memberRepository.findOptionalByUsername("AAA")
+    println("findOptionalByUsername = $findOptionalByUsername")
+  }
 }

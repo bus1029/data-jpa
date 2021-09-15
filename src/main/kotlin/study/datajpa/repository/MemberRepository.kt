@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import study.datajpa.dto.MemberDto
 import study.datajpa.entity.Member
+import java.util.*
 
 interface MemberRepository : JpaRepository<Member, Long> {
   fun findByUsernameAndAgeGreaterThan(username: String, age: Int): MutableList<Member>
@@ -23,4 +24,8 @@ interface MemberRepository : JpaRepository<Member, Long> {
 
   @Query("select m from Member m where m.username in :names")
   fun findByNames(@Param("names") names: MutableList<String>): MutableList<Member>
+
+  fun findListByUsername(username: String): MutableList<Member> // 컬렉션
+  fun findMemberByUsername(username: String): Member? // 단건
+  fun findOptionalByUsername(username: String): Optional<Member> // 단건 Optional
 }
