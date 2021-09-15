@@ -127,4 +127,17 @@ class MemberRepositoryTest {
       println("memberDto = $it")
     }
   }
+
+  @Test
+  fun findByNames() {
+    val m1 = Member("AAA", 10, null)
+    val m2 = Member("BBB", 20, null)
+    memberRepository.save(m1)
+    memberRepository.save(m2)
+
+    val members = memberRepository.findByNames(mutableListOf("AAA", "BBB"))
+    members.forEach {
+      println("memberDto = $it")
+    }
+  }
 }
