@@ -219,7 +219,17 @@ class MemberRepositoryTest {
     assertThat(page.number).isEqualTo(0)
     assertThat(page.isFirst).isTrue
     assertThat(page.hasNext()).isTrue
+  }
 
+  @Test
+  fun bulkUpdate() {
+    memberRepository.save(Member("member1", 10, null))
+    memberRepository.save(Member("member2", 19, null))
+    memberRepository.save(Member("member3", 20, null))
+    memberRepository.save(Member("member4", 21, null))
+    memberRepository.save(Member("member5", 40, null))
 
+    val resultCount = memberRepository.bulkAgePlus(20)
+    assertThat(resultCount).isEqualTo(3)
   }
 }

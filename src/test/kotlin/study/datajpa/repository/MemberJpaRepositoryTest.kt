@@ -97,4 +97,16 @@ internal class MemberJpaRepositoryTest {
     assertThat(members?.size).isEqualTo(3)
     assertThat(totalCount).isEqualTo(5L)
   }
+
+  @Test
+  fun bulkUpdate() {
+    memberJpaRepository.save(Member("member1", 10, null))
+    memberJpaRepository.save(Member("member2", 19, null))
+    memberJpaRepository.save(Member("member3", 20, null))
+    memberJpaRepository.save(Member("member4", 21, null))
+    memberJpaRepository.save(Member("member5", 40, null))
+
+    val resultCount = memberJpaRepository.bulkAgePlus(20)
+    assertThat(resultCount).isEqualTo(3)
+  }
 }
