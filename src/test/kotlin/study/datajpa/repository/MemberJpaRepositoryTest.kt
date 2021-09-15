@@ -73,4 +73,28 @@ internal class MemberJpaRepositoryTest {
     val members = memberJpaRepository.findByUserName("BBB")
     assertThat(members?.size).isEqualTo(1)
   }
+
+  @Test
+  fun paging() {
+    memberJpaRepository.save(Member("member1", 10, null))
+    memberJpaRepository.save(Member("member2", 10, null))
+    memberJpaRepository.save(Member("member3", 10, null))
+    memberJpaRepository.save(Member("member4", 10, null))
+    memberJpaRepository.save(Member("member5", 10, null))
+
+    val age = 10
+    val offset = 1
+    val limit = 3
+
+    val totalCount = memberJpaRepository.totalCount(age)
+    val members = memberJpaRepository.findByPage(age, offset, limit)
+
+    // 페이지 계산 공식 적용
+    // totalPage = totalCount / size ...
+    // 마지막 페이지...
+    // 최초 페이지...
+
+    assertThat(members?.size).isEqualTo(3)
+    assertThat(totalCount).isEqualTo(5L)
+  }
 }
