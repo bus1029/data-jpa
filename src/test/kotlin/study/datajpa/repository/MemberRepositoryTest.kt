@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional
 import study.datajpa.dto.MemberDto
 import study.datajpa.entity.Member
 import study.datajpa.entity.Team
+import javax.persistence.EntityManager
+import javax.persistence.PersistenceContext
 
 @SpringBootTest
 @Transactional // 테스트가 끝나면 결과를 롤백
@@ -23,6 +25,8 @@ class MemberRepositoryTest {
   private lateinit var memberRepository: MemberRepository
   @Autowired
   private lateinit var teamRepository: TeamRepository
+  @PersistenceContext
+  private lateinit var em: EntityManager
 
   @Test
   fun testMember() {
@@ -231,5 +235,57 @@ class MemberRepositoryTest {
 
     val resultCount = memberRepository.bulkAgePlus(20)
     assertThat(resultCount).isEqualTo(3)
+  }
+
+  @Test
+  fun findMemberLazy() {
+    // given
+    // member1 -> teamA
+    // member2 -> teamB
+    var teamA = Team("teamA")
+    var teamB = Team("teamB")
+    teamA = teamRepository.save(teamA)
+    teamB = teamRepository.save(teamB)
+
+    val memberA = Member("memberA", 10, teamA)
+    val memberB = Member("memberB", 20, teamB)
+    memberRepository.save(memberA)
+    memberRepository.save(memberB)
+
+    em.flush()
+    em.clear()
+
+    val members = memberRepository.findAll()
+    members.forEach {
+      println("member = ${it}")
+      println("teamClass = ${it.team.javaClass}")
+      println("team = ${it.team}")
+    }
+  }
+
+  @Test
+  fun findMemberFetchJoin() {
+    // given
+    // member1 -> teamA
+    // member2 -> teamB
+    var teamA = Team("teamA")
+    var teamB = Team("teamB")
+    teamA = teamRepository.save(teamA)
+    teamB = teamRepository.save(teamB)
+
+    val memberA = Member("memberA", 10, teamA)
+    val memberB = Member("memberB", 20, teamB)
+    memberRepository.save(memberA)
+    memberRepository.save(memberB)
+
+    em.flush()
+    em.clear()
+
+    val members = memberRepository.findMemberFetchJoin()
+    members.forEach {
+      println("member = ${it}")
+      println("teamClass = ${it.team.javaClass}")
+      println("team = ${it.team}")
+    }
   }
 }
