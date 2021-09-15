@@ -1,6 +1,5 @@
 package study.datajpa.repository
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,6 +8,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
 import study.datajpa.entity.Member
+import study.datajpa.entity.Team
 
 @SpringBootTest
 @Transactional // 테스트가 끝나면 결과를 롤백
@@ -16,6 +16,8 @@ import study.datajpa.entity.Member
 class MemberRepositoryTest {
   @Autowired
   private lateinit var memberRepository: MemberRepository
+  @Autowired
+  private lateinit var teamRepository: TeamRepository
 
   @Test
   fun testMember() {
@@ -94,5 +96,35 @@ class MemberRepositoryTest {
 
     val members = memberRepository.findUser("BBB", 20)
     assertThat(members.size).isEqualTo(1)
+  }
+
+  @Test
+  fun findUsernameList() {
+    val m1 = Member("AAA", 10, null)
+    val m2 = Member("BBB", 20, null)
+    memberRepository.save(m1)
+    memberRepository.save(m2)
+
+    val members = memberRepository.findUsernameList()
+    members.forEach {
+      println("username = $it")
+    }
+  }
+
+  @Test
+  fun findMemberDto() {
+    var teamA = Team("teamA")
+    //ID 가 발급된 teamA 를 사용해야 하기 때문에
+    teamA = teamRepository.save(teamA)
+
+    val m1 = Member("AAA", 10, teamA)
+    val m2 = Member("BBB", 20, teamA)
+    memberRepository.save(m1)
+    memberRepository.save(m2)
+
+    val memberDtos = memberRepository.findMemberDto()
+    memberDtos.forEach {
+      println("memberDto = $it")
+    }
   }
 }
