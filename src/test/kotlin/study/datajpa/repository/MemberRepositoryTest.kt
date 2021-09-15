@@ -4,9 +4,14 @@ import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Slice
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
+import study.datajpa.dto.MemberDto
 import study.datajpa.entity.Member
 import study.datajpa.entity.Team
 
@@ -168,5 +173,53 @@ class MemberRepositoryTest {
     // 같은 데이터가 2 개 이상일 경우 Exception 이 터지지만 Spring 이 해당 Exception 을 한번 감싸서 다시 던짐
     val findOptionalByUsername = memberRepository.findOptionalByUsername("AAA")
     println("findOptionalByUsername = $findOptionalByUsername")
+  }
+
+  @Test
+  fun paging() {
+    memberRepository.save(Member("member1", 10, null))
+    memberRepository.save(Member("member2", 10, null))
+    memberRepository.save(Member("member3", 10, null))
+    memberRepository.save(Member("member4", 10, null))
+    memberRepository.save(Member("member5", 10, null))
+
+    val age = 10
+    val offset = 1
+    val limit = 3
+
+    val pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "username"))
+    // 반환 타입에 따라서 Total Count 쿼리를 날릴지 말지 결정
+    val page = memberRepository.findByAge(age, pageRequest)
+    val memberDto: Page<MemberDto> = page.map { member ->
+      MemberDto(member.id, member.username, "")
+    }
+    val content = page.content
+    val totalCount = page.totalElements
+
+    content.forEach {
+      println("member = $it")
+    }
+
+    assertThat(content.size).isEqualTo(3)
+    assertThat(totalCount).isEqualTo(5L)
+    assertThat(page.number).isEqualTo(0)
+    assertThat(page.totalPages).isEqualTo(2)
+    assertThat(page.isFirst).isTrue
+    assertThat(page.hasNext()).isTrue
+
+    val slice = memberRepository.findSliceByAge(age, pageRequest)
+    val sliceContent = slice.content
+
+    // 카운트 쿼리가 날아가지 않음
+    sliceContent.forEach {
+      println("member = $it")
+    }
+
+    assertThat(content.size).isEqualTo(3)
+    assertThat(page.number).isEqualTo(0)
+    assertThat(page.isFirst).isTrue
+    assertThat(page.hasNext()).isTrue
+
+
   }
 }
