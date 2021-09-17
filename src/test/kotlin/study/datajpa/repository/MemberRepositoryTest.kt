@@ -288,4 +288,32 @@ class MemberRepositoryTest {
       println("team = ${it.team}")
     }
   }
+
+  @Test
+  fun queryHint() {
+    val memberA = memberRepository.save(Member("memberA", 10, null))
+    em.flush()
+    em.clear()
+    // 영속성 컨텍스트가 비워지기 때문에 쿼리 발행
+
+//    val findMember = memberRepository.findByIdOrNull(memberA.id)
+//    // Dirty Check 기능을 위해 원본 데이터인 memberA 외에 변경된 member2 도 갖고 있게 됨
+//    findMember?.username = "member2"
+//    em.flush()
+
+    // 오직 조회만을 위해 사용하고 싶다면?
+    // Read-only 이기 때문에 내부적으로 스냅샷을 만들지 않는 방향으로 최적화를 진행
+    val findMember = memberRepository.findReadOnlyByUsername("memberA")
+    findMember.username = "member2"
+    em.flush()
+  }
+
+  @Test
+  fun lock() {
+    val memberA = memberRepository.save(Member("memberA", 10, null))
+    em.flush()
+    em.clear()
+
+    val members = memberRepository.findLockByUsername("memberA")
+  }
 }
