@@ -11,7 +11,7 @@ import java.util.*
 import javax.persistence.LockModeType
 import javax.persistence.QueryHint
 
-interface MemberRepository : JpaRepository<Member, Long> {
+interface MemberRepository : JpaRepository<Member, Long>, CustomMemberRepository {
   fun findByUsernameAndAgeGreaterThan(username: String, age: Int): MutableList<Member>
   @Query(name = "Member.findByUsername") // 생략 가능, 반환 값의 Member.메소드명 으로 Named Query를 먼저 검색, 없을 경우 메소드 쿼리 기능 실행
   // Named Parameter 를 JPQL 에 작성했을 때
