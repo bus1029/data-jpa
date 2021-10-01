@@ -11,7 +11,7 @@ import javax.persistence.*
   name = "Member.all",
   attributeNodes = [NamedAttributeNode("team")]
 )
-class Member constructor(var username: String = "") {
+class Member constructor(var username: String = "") : JpaBaseEntity() {
   @Id @GeneratedValue
   @Column(name = "member_id")
   var id: Long = -1

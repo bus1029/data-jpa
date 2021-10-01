@@ -321,4 +321,22 @@ class MemberRepositoryTest {
   fun callCustomMemberRepository() {
     val findMemberCustom = memberRepository.findMemberCustom()
   }
+
+
+  @Test
+  fun jpaEventBaseEntity() {
+    var member = Member("member1")
+    member = memberRepository.save(member)
+
+    Thread.sleep(100);
+    member.username = "member2" // @Prepersist
+
+    em.flush()
+    em.clear()
+
+    val member1 = memberRepository.findByIdOrNull(member.id)
+
+    println("Created Date:  ${member1?.createdDate}")
+    println("Updated Date: ${member1?.updateDate}")
+  }
 }
