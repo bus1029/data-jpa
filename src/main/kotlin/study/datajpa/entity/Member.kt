@@ -19,7 +19,7 @@ class Member constructor(var username: String = "") : BaseEntity() {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
-  lateinit var team: Team
+  var team: Team? = null
 
   constructor(username: String, age: Int, team: Team?) : this(username) {
     this.username = username
@@ -35,6 +35,6 @@ class Member constructor(var username: String = "") : BaseEntity() {
 
   fun changeTeam(team: Team) {
     this.team = team
-    this.team.members.add(this)
+    this.team!!.members.add(this)
   }
 }

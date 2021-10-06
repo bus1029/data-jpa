@@ -1,5 +1,11 @@
 package study.datajpa.dto
 
-data class MemberDto(private val id: Long, private val username: String, private val teamName: String) {
+import study.datajpa.entity.Member
 
+data class MemberDto(var id: Long = 0, var username: String = "", var teamName: String = "") {
+  constructor(member: Member) : this() {
+    this.id = member.id
+    this.username = member.username
+    this.teamName = member.team?.name.toString()
+  }
 }
