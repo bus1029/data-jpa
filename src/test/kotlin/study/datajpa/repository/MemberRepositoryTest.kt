@@ -257,7 +257,7 @@ class MemberRepositoryTest {
     val members = memberRepository.findAll()
     members.forEach {
       println("member = ${it}")
-      println("teamClass = ${it.team.javaClass}")
+      println("teamClass = ${it.team?.javaClass}")
       println("team = ${it.team}")
     }
   }
@@ -283,7 +283,7 @@ class MemberRepositoryTest {
     val members = memberRepository.findMemberFetchJoin()
     members.forEach {
       println("member = ${it}")
-      println("teamClass = ${it.team.javaClass}")
+      println("teamClass = ${it.team?.javaClass}")
       println("team = ${it.team}")
     }
   }
