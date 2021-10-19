@@ -1,5 +1,6 @@
 package study.datajpa.repository
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 import study.datajpa.dto.MemberDto
 import study.datajpa.entity.Member
 import study.datajpa.entity.Team
+import study.datajpa.repository.specification.MemberSpec
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
@@ -339,5 +341,23 @@ class MemberRepositoryTest {
     println("Updated Date: ${member1?.lastModifiedDate}")
     println("Created By: ${member1?.createdBy}")
     println("Modified By: ${member1?.lastModifiedBy}")
+  }
+
+  @Test
+  fun specBasic() {
+    val teamA = Team("teamA")
+    em.persist(teamA)
+
+    val member1 = Member("m1", 0, teamA)
+    val member2 = Member("m2", 0, teamA)
+    em.persist(member1)
+    em.persist(member2)
+
+    em.flush()
+    em.clear()
+
+    val specification = MemberSpec.username("m1").and(MemberSpec.teamName("teamA"))
+    val members = memberRepository.findAll(specification)
+    assertThat(members.size).isEqualTo(1)
   }
 }
