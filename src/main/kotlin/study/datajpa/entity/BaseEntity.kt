@@ -15,15 +15,15 @@ import javax.persistence.MappedSuperclass
 class BaseEntity {
   @CreatedDate
   @Column(updatable = false)
-  lateinit var createdDate: LocalDateTime
+  var createdDate: LocalDateTime? = null
 
   @LastModifiedDate
-  lateinit var lastModifiedDate: LocalDateTime
+  var lastModifiedDate: LocalDateTime? = null
 
   @CreatedBy
   @Column(updatable = false)
-  lateinit var createdBy: String
+  var createdBy: String? = null
 
   @LastModifiedBy
-  lateinit var lastModifiedBy: String
+  var lastModifiedBy: String? = null
 }

@@ -20,7 +20,7 @@ internal class MemberJpaRepositoryTest {
   fun testMember() {
     val member = Member("memberA")
     val savedMember = memberJpaRepository.save(member)
-    val findMember = memberJpaRepository.find(savedMember.id)
+    val findMember = memberJpaRepository.find(savedMember.id!!)
 
     assertThat(findMember?.id).isEqualTo(savedMember.id)
     assertThat(findMember?.username).isEqualTo(savedMember.username)
@@ -35,8 +35,8 @@ internal class MemberJpaRepositoryTest {
     memberJpaRepository.save(member1)
     memberJpaRepository.save(member2)
 
-    val findMember1 = memberJpaRepository.find(member1.id)
-    val findMember2 = memberJpaRepository.find(member2.id)
+    val findMember1 = memberJpaRepository.find(member1.id!!)
+    val findMember2 = memberJpaRepository.find(member2.id!!)
     assertThat(findMember1).isEqualTo(member1)
     assertThat(findMember2).isEqualTo(member2)
 

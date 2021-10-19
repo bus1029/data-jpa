@@ -5,9 +5,7 @@ import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.test.annotation.Rollback
 import org.springframework.transaction.annotation.Transactional
@@ -196,7 +194,7 @@ class MemberRepositoryTest {
     // 반환 타입에 따라서 Total Count 쿼리를 날릴지 말지 결정
     val page = memberRepository.findByAge(age, pageRequest)
     val memberDto: Page<MemberDto> = page.map { member ->
-      MemberDto(member.id, member.username, "")
+      MemberDto(member.id!!, member.username, "")
     }
     val content = page.content
     val totalCount = page.totalElements
@@ -359,5 +357,58 @@ class MemberRepositoryTest {
     val specification = MemberSpec.username("m1").and(MemberSpec.teamName("teamA"))
     val members = memberRepository.findAll(specification)
     assertThat(members.size).isEqualTo(1)
+  }
+
+  @Test
+  fun queryByExample() {
+    val teamA = Team("teamA")
+    em.persist(teamA)
+
+    val member1 = Member("m1", 0, teamA)
+    val member2 = Member("m2", 0, teamA)
+    em.persist(member1)
+    em.persist(member2)
+
+    em.flush()
+    em.clear()
+
+    // Probe
+    val condition = Member("m1")
+    // id 와 age 를 where 조건에 자동으로 넣어버리기 때문에 무시하는 코드가 필요함
+    // 기본정책으로 null 은 무시하게 설정되어 있음
+    val matcher = ExampleMatcher.matching()
+      .withIgnorePaths("age")
+    val example = Example.of(condition, matcher)
+
+    val result = memberRepository.findAll(example)
+    assertThat(result[0].username).isEqualTo("m1")
+  }
+
+  @Test
+  fun queryByExampleWithJoin() {
+    val teamA = Team("teamA")
+    em.persist(teamA)
+
+    val member1 = Member("m1", 0, teamA)
+    val member2 = Member("m2", 0, teamA)
+    em.persist(member1)
+    em.persist(member2)
+
+    em.flush()
+    em.clear()
+
+    // Probe
+    val condition = Member("m1")
+    val team = Team("teamA")
+    condition.team = team
+
+    // id 와 age 를 where 조건에 자동으로 넣어버리기 때문에 무시하는 코드가 필요함
+    // 기본정책으로 null 은 무시하게 설정되어 있음
+    val matcher = ExampleMatcher.matching()
+      .withIgnorePaths("age")
+    val example = Example.of(condition, matcher)
+
+    val result = memberRepository.findAll(example)
+    assertThat(result[0].username).isEqualTo("m1")
   }
 }

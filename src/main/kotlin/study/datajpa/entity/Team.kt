@@ -6,7 +6,7 @@ import javax.persistence.*
 class Team constructor(var name: String = "") {
   @Id @GeneratedValue
   @Column(name = "team_id")
-  var id: Long = -1
+  var id: Long? = null
 
   @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
   var members = mutableListOf<Member>()

@@ -14,7 +14,7 @@ import javax.persistence.*
 class Member constructor(var username: String = "") : BaseEntity() {
   @Id @GeneratedValue
   @Column(name = "member_id")
-  var id: Long = -1
+  var id: Long? = null
   var age: Int = -1
 
   @ManyToOne(fetch = FetchType.LAZY)

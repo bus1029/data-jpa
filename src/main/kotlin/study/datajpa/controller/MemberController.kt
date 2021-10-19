@@ -33,7 +33,7 @@ class MemberController constructor(private var memberRepository: MemberRepositor
   @GetMapping("/members2")
   fun listWithDto(@PageableDefault(size = 5) pageable: Pageable): Page<MemberDto> {
     return memberRepository.findAll(pageable)
-      .map { member -> MemberDto(member.id, member.username, "") }
+      .map { member -> MemberDto(member.id!!, member.username, "") }
   }
 
   @GetMapping("/members3")
