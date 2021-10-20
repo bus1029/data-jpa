@@ -411,4 +411,33 @@ class MemberRepositoryTest {
     val result = memberRepository.findAll(example)
     assertThat(result[0].username).isEqualTo("m1")
   }
+
+  @Test
+  fun projections() {
+    val teamA = Team("teamA")
+    em.persist(teamA)
+
+    val member1 = Member("m1", 0, teamA)
+    val member2 = Member("m2", 0, teamA)
+    em.persist(member1)
+    em.persist(member2)
+
+    em.flush()
+    em.clear()
+
+    val result = memberRepository.findProjectionsByUsername("m1")
+    for (usernameOnly in result) {
+      println("usernameOnly = $usernameOnly")
+    }
+
+    val resultDto = memberRepository.findProjectionsDtoByUsername("m2")
+    for (usernameOnlyDto in resultDto) {
+      println("usernameOnlyDto = $usernameOnlyDto")
+    }
+
+    val nestedResult = memberRepository.findNestedProjectionsByUsername("m1")
+    for (nestedClosedProjections in nestedResult) {
+      println("nestedClosedProjections = $nestedClosedProjections")
+    }
+  }
 }
