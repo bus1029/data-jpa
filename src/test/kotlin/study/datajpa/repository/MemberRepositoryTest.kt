@@ -440,4 +440,42 @@ class MemberRepositoryTest {
       println("nestedClosedProjections = $nestedClosedProjections")
     }
   }
+
+  @Test
+  fun nativeQuery() {
+    val teamA = Team("teamA")
+    em.persist(teamA)
+
+    val member1 = Member("m1", 0, teamA)
+    val member2 = Member("m2", 0, teamA)
+    em.persist(member1)
+    em.persist(member2)
+
+    em.flush()
+    em.clear()
+
+    val member = memberRepository.findByNativeQuery("m1")
+    println("member = $member")
+  }
+
+  @Test
+  fun nativeProjectionQuery() {
+    val teamA = Team("teamA")
+    em.persist(teamA)
+
+    val member1 = Member("m1", 0, teamA)
+    val member2 = Member("m2", 0, teamA)
+    em.persist(member1)
+    em.persist(member2)
+
+    em.flush()
+    em.clear()
+
+    val result = memberRepository.findByNativeProjection(PageRequest.of(0, 10))
+    val contents = result.content
+    for (content in contents) {
+      println("content.getUsername() = ${content.getUsername()}")
+      println("content.getTeamName() = ${content.getTeamName()}")
+    }
+  }
 }
